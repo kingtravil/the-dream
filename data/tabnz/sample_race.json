@@ -1,0 +1,122 @@
+{
+  "meetings_response": {
+    "header": {
+      "title": "Race Meetings",
+      "generated_time": "2026-06-26T02:00:00Z"
+    },
+    "params": {
+      "enc": "json",
+      "country": "NZL",
+      "type": "T"
+    },
+    "data": {
+      "meetings": [
+        {
+          "meeting": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "name": "Ellerslie",
+          "date": "2026-06-26T00:00:00Z",
+          "category": "T",
+          "category_name": "Thoroughbred Horse Racing",
+          "country": "NZL",
+          "state": "NZ",
+          "races": [
+            {
+              "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "race_number": 5,
+              "name": "TAB Mile",
+              "start_time": "2026-06-26T04:30:00Z",
+              "track_condition": "Good4",
+              "distance": 1600,
+              "weather": "Fine",
+              "country": "NZL",
+              "state": "NZ"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "race_response": {
+    "header": {
+      "title": "Event Details",
+      "generated_time": "2026-06-26T04:35:00Z"
+    },
+    "params": {
+      "enc": "json",
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+    },
+    "data": {
+      "race": {
+        "event_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "meeting_name": "Ellerslie",
+        "meeting_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "status": "Final",
+        "description": "TAB Mile",
+        "advertised_start": 1782534600,
+        "actual_start": 1782534600,
+        "race_number": 5,
+        "type": "T",
+        "country": "NZL",
+        "state": "NZ",
+        "distance": 1600,
+        "weather": "Fine",
+        "track_condition": "Good4"
+      },
+      "results": [
+        {"position": 1, "name": "Ocean Drive", "barrier": 3, "runner_number": 1, "margin_length": 0},
+        {"position": 2, "name": "Kiwi Star", "barrier": 7, "runner_number": 2, "margin_length": 1.2},
+        {"position": 3, "name": "Southbound", "barrier": 1, "runner_number": 3, "margin_length": 2.5}
+      ],
+      "runners": [
+        {
+          "competitor_id": "nz-1001",
+          "runner_number": 1,
+          "name": "1. Ocean Drive",
+          "barrier": 3,
+          "jockey": "M. McNab",
+          "trainer_name": "S. Marsh",
+          "is_scratched": false,
+          "weight": {"allocated": "57.0", "total": "57.0"},
+          "flucs": [4.2, 4.0, 3.8, 3.6],
+          "odds": {"fixed_win": 3.50, "fixed_place": 1.60}
+        },
+        {
+          "competitor_id": "nz-1002",
+          "runner_number": 2,
+          "name": "2. Kiwi Star",
+          "barrier": 7,
+          "jockey": "J. K. Williams",
+          "trainer_name": "M. Pitman",
+          "is_scratched": false,
+          "weight": {"allocated": "56.5", "total": "56.5"},
+          "flucs": [8.0, 7.5, 7.0, 6.5],
+          "odds": {"fixed_win": 6.00, "fixed_place": 2.10}
+        },
+        {
+          "competitor_id": "nz-1003",
+          "runner_number": 3,
+          "name": "3. Southbound",
+          "barrier": 1,
+          "jockey": "R. Hutchings",
+          "trainer_name": "J. O'Brien",
+          "is_scratched": false,
+          "weight": {"allocated": "58.0", "total": "58.0"},
+          "flucs": [12.0, 11.0, 10.5, 10.0],
+          "odds": {"fixed_win": 9.50, "fixed_place": 2.80}
+        },
+        {
+          "competitor_id": "nz-1004",
+          "runner_number": 4,
+          "name": "4. Late Scratch",
+          "barrier": 5,
+          "jockey": "C. Lammas",
+          "trainer_name": "L. Latta",
+          "is_scratched": true,
+          "weight": {"allocated": "57.5", "total": "57.5"},
+          "flucs": [15.0, 14.0],
+          "odds": {"fixed_win": 0, "fixed_place": 0}
+        }
+      ]
+    }
+  }
+}
