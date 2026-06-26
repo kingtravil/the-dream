@@ -152,8 +152,7 @@ class BacktestEngine:
             )
 
         bsp_map = {b.runner_id: b.bsp for b in replay.bsp}
-        for rid, bsp in bsp_map.items():
-            self.ledger.update_with_bsp(rid, race.race_id, bsp)
+        self.ledger.update_race_clv(race.race_id, replay.bsp)
 
         if replay.winner_id:
             for runner in race.active_runners:

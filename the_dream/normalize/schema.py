@@ -83,7 +83,9 @@ class BetRecord:
     human_signal: Optional[HumanSignal]
     decision_reason: List[str]
     bsp: Optional[float] = None
+    bsp_prob: Optional[float] = None
     clv_prob: Optional[float] = None
+    clv_prob_raw: Optional[float] = None
     clv_pct: Optional[float] = None
     result: Optional[str] = None
     pnl_gross: Optional[float] = None

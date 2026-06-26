@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from the_dream.normalize.schema import MarketSnapshot
 
@@ -10,7 +10,20 @@ from the_dream.normalize.schema import MarketSnapshot
 def market_features(
     snapshot: MarketSnapshot,
     prior_snapshot: Optional[MarketSnapshot] = None,
+    decision_cutoff_utc: Optional[int] = None,
 ) -> Dict[str, float]:
+    if decision_cutoff_utc is not None and snapshot.timestamp_utc > decision_cutoff_utc:
+        raise ValueError(
+            f"Leakage detected: market snapshot ts={snapshot.timestamp_utc} "
+            f"> cutoff={decision_cutoff_utc}"
+        )
+    if prior_snapshot and decision_cutoff_utc is not None:
+        if prior_snapshot.timestamp_utc > decision_cutoff_utc:
+            raise ValueError(
+                f"Leakage detected: prior snapshot ts={prior_snapshot.timestamp_utc} "
+                f"> cutoff={decision_cutoff_utc}"
+            )
+
     spread = 0.0
     if snapshot.back_price > 1.0 and snapshot.lay_price > 1.0:
         spread = (snapshot.lay_price - snapshot.back_price) / snapshot.back_price

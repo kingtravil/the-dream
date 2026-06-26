@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from the_dream.audit.clv import clv_percentage, clv_probability, settle_pnl
+from the_dream.audit.clv import clv_pct, clv_prob_devig, clv_prob_raw, devig_bsp_probs
+from the_dream.audit.clv import settle_pnl
 from the_dream.decision.decide import Decision, DecisionContext
-from the_dream.normalize.schema import BetRecord, HumanSignal
+from the_dream.normalize.schema import BetRecord, BSPRecord, HumanSignal
 
 
 class AuditLedger:
@@ -27,8 +28,10 @@ class AuditLedger:
         code_version: str = "",
         timestamp_utc: int = 0,
         fill_price: Optional[float] = None,
+        shadow: bool = False,
     ) -> BetRecord:
         price = fill_price or ctx.price
+        stake = 0.0 if shadow else decision.stake
         record = BetRecord(
             race_id=ctx.race_id,
             runner_id=ctx.runner_id,
@@ -37,7 +40,7 @@ class AuditLedger:
             price_entry=price,
             ev_net=ctx.ev_net,
             confidence=ctx.confidence,
-            stake=decision.stake,
+            stake=stake,
             human_signal=ctx.human,
             decision_reason=decision.reason,
             feature_hash=feature_hash,
@@ -52,24 +55,42 @@ class AuditLedger:
             self._append_to_disk(record)
         return record
 
+    def update_race_clv(
+        self,
+        race_id: str,
+        bsp_records: List[BSPRecord],
+    ) -> None:
+        """Compute de-vigged prob-space CLV for all records in a race."""
+        bsp_probs = devig_bsp_probs([(b.runner_id, b.bsp) for b in bsp_records])
+        bsp_by_runner = {b.runner_id: b.bsp for b in bsp_records}
+
+        for i, rec in enumerate(self.records):
+            if rec.race_id != race_id:
+                continue
+            rid = rec.runner_id
+            bsp = bsp_by_runner.get(rid)
+            bsp_prob = bsp_probs.get(rid)
+            if bsp is None or bsp_prob is None:
+                continue
+            self.records[i] = BetRecord(
+                **{
+                    **asdict(rec),
+                    "bsp": bsp,
+                    "bsp_prob": bsp_prob,
+                    "clv_prob": clv_prob_devig(bsp_prob, rec.p_market_entry),
+                    "clv_prob_raw": clv_prob_raw(rec.price_entry, bsp),
+                    "clv_pct": clv_pct(rec.price_entry, bsp),
+                }
+            )
+
     def update_with_bsp(
         self,
         runner_id: str,
         race_id: str,
         bsp: float,
     ) -> None:
-        for i, rec in enumerate(self.records):
-            if rec.runner_id == runner_id and rec.race_id == race_id:
-                clv_p = clv_probability(rec.p_market_entry, bsp, rec.price_entry)
-                clv_pc = clv_percentage(rec.price_entry, bsp)
-                self.records[i] = BetRecord(
-                    **{
-                        **asdict(rec),
-                        "bsp": bsp,
-                        "clv_prob": clv_p,
-                        "clv_pct": clv_pc,
-                    }
-                )
+        """Legacy single-runner update — prefer update_race_clv for correct de-vig."""
+        self.update_race_clv(race_id, [BSPRecord(runner_id=runner_id, bsp=bsp)])
 
     def update_with_result(
         self,
@@ -102,3 +123,7 @@ class AuditLedger:
 
     def bet_count(self) -> int:
         return sum(1 for r in self.records if r.decision == "BET")
+
+    def would_be_bets(self) -> List[BetRecord]:
+        """Records where decide() returned BET (stake may be 0 in shadow mode)."""
+        return [r for r in self.records if r.decision == "BET"]

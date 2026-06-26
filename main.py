@@ -5,13 +5,23 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from the_dream import __version__
-from the_dream.backtest import BacktestEngine, ReplayRace, compute_metrics, metrics_report
+from the_dream.backtest import (
+    BacktestEngine,
+    ReplayRace,
+    ShadowCLVHarness,
+    compute_metrics,
+    metrics_report,
+    write_clv_report,
+)
 from the_dream.config import DEFAULT_CONFIG, DreamConfig, OperatingMode
 from the_dream.ingest.form import FormRun, FormStore
 from the_dream.normalize.schema import BSPRecord, MarketSnapshot, RaceEvent, Runner
 from the_dream.pipeline import DreamEngine
+
+HISTORICAL_DIR = Path(__file__).parent / "data" / "historical"
 
 
 def _demo_race() -> ReplayRace:
@@ -79,14 +89,24 @@ def run_shadow(cfg: DreamConfig) -> None:
     for out in outputs:
         print(json.dumps(out, indent=2))
 
-    for bsp in demo.bsp:
-        engine.ledger.update_with_bsp(bsp.runner_id, demo.race.race_id, bsp.bsp)
-
-    bt = BacktestEngine(cfg=cfg, form_store=store)
-    bt.ledger = engine.ledger
-    metrics = compute_metrics(bt.ledger)
+    engine.ledger.update_race_clv(demo.race.race_id, demo.bsp)
+    metrics = compute_metrics(engine.ledger)
     print("---")
     print(metrics_report(metrics))
+
+
+def run_shadow_clv(cfg: DreamConfig, data_path: Path, output: Path) -> None:
+    """Historical shadow CLV validation — decide() runs, stake nothing."""
+    harness = ShadowCLVHarness(cfg=cfg)
+    paths = [data_path] if data_path.is_file() else [data_path]
+    report = harness.run_paths(paths)
+    write_clv_report(report, output)
+
+    print(f"🐎 THE DREAM v{__version__} | Shadow CLV harness")
+    print(f"Data: {data_path}")
+    print(f"Report: {output}")
+    print("---")
+    print(metrics_report(report))
 
 
 def run_backtest(cfg: DreamConfig) -> None:
@@ -106,7 +126,23 @@ def main() -> None:
         default=DEFAULT_CONFIG.mode.value,
     )
     parser.add_argument("--region", default=DEFAULT_CONFIG.region)
-    parser.add_argument("--command", choices=["shadow", "backtest", "evaluate"], default="shadow")
+    parser.add_argument(
+        "--command",
+        choices=["shadow", "shadow-clv", "backtest", "evaluate"],
+        default="shadow",
+    )
+    parser.add_argument(
+        "--data",
+        type=Path,
+        default=HISTORICAL_DIR,
+        help="Historical data file or directory for shadow-clv",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("CLV_REPORT.json"),
+        help="Output path for CLV_REPORT.json",
+    )
     args = parser.parse_args()
 
     cfg = DreamConfig(
@@ -116,6 +152,8 @@ def main() -> None:
 
     if args.command == "shadow":
         run_shadow(cfg)
+    elif args.command == "shadow-clv":
+        run_shadow_clv(cfg, args.data, args.output)
     elif args.command == "backtest":
         run_backtest(cfg)
     else:

@@ -39,9 +39,20 @@ Stay in `PAPER` until CLV is statistically positive over thousands of bets.
 
 ```bash
 pip install -e ".[dev]"
-python main.py --command shadow --mode PAPER --region NZ
 pytest
+python main.py --command shadow --mode PAPER --region NZ
+python main.py --command shadow-clv --data data/historical/sample_races.jsonl
+python clv_oracle.py
 ```
+
+## CLV measurement
+
+**Headline metric:** de-vigged probability-space CLV (`bsp_prob - p_market_entry_devig`), reported as **CLV-above-null** (minus the bet-everything null baseline). Decimal-odds `clv_pct` is display-only — biased upward by the convexity of 1/p.
+
+| Command | Purpose |
+|---------|---------|
+| `python clv_oracle.py` | Known-answer regression on synthetic data |
+| `python main.py --command shadow-clv` | Historical replay, stake nothing, emit `CLV_REPORT.json` |
 
 ## Key modules
 
