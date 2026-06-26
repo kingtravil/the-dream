@@ -8,10 +8,13 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 from the_dream.config import DreamConfig
-from the_dream.features import decision_cutoff
 from the_dream.ingest.betfair import snapshot_at_cutoff
 from the_dream.normalize.dedupe import apply_scratchings
 from the_dream.normalize.schema import BSPRecord, MarketSnapshot, RaceEvent, Runner
+
+
+def decision_cutoff(start_time_utc: int, lead_seconds: int) -> int:
+    return start_time_utc - lead_seconds
 
 
 @dataclass

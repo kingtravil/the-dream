@@ -52,7 +52,7 @@ python clv_oracle.py
 | Command | Purpose |
 |---------|---------|
 | `python clv_oracle.py` | Known-answer regression on synthetic data |
-| `python ingest_race.py <file>` | Parse Betfair stream JSON → runners + prices + BSP bucket |
+| `python ingest_tabnz.py` | TAB NZ affiliate feed → runners + timeline + close bucket |
 
 ## Key modules
 

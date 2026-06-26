@@ -15,6 +15,13 @@ from the_dream.ingest.historical import (
     reconstruct_at_cutoff,
 )
 from the_dream.ingest.tab import TABClient
+from the_dream.ingest.tabnz import (
+    TabNZClient,
+    TabNZConfig,
+    format_ingested,
+    ingest_race,
+    parse_tabnz_race_payload,
+)
 
 __all__ = [
     "BetfairRESTClient",
@@ -22,10 +29,19 @@ __all__ = [
     "FormStore",
     "HistoricalRace",
     "HistoricalReplayRace",
+    "IngestedMarket",
     "TABClient",
+    "TabNZClient",
+    "TabNZConfig",
+    "apply_bsp_csv",
+    "format_ingested",
+    "ingest_race",
     "iter_replay_races",
+    "load_bsp_csv",
     "load_historical_dir",
     "load_historical_file",
+    "parse_betfair_stream",
+    "parse_tabnz_race_payload",
     "reconstruct_at_cutoff",
     "snapshot_at_cutoff",
 ]
