@@ -52,7 +52,7 @@ python clv_oracle.py
 | Command | Purpose |
 |---------|---------|
 | `python clv_oracle.py` | Known-answer regression on synthetic data |
-| `python main.py --command shadow-clv` | Historical replay, stake nothing, emit `CLV_REPORT.json` |
+| `python ingest_race.py <file>` | Parse Betfair stream JSON → runners + prices + BSP bucket |
 
 ## Key modules
 
