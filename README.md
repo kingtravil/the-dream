@@ -61,8 +61,10 @@ python clv_oracle.py
 | `the_dream/config.py` | Commission tables, risk limits, mode flags |
 | `the_dream/decision/decide.py` | Pure decision function (live == backtest) |
 | `the_dream/edge/edge.py` | Commission-adjusted net EV |
-| `the_dream/audit/clv.py` | CLV vs BSP truth loop |
-| `the_dream/backtest/replay.py` | Chronological replay engine |
+| `the_dream/audit/clv.py` | De-vig prob-space CLV + null baseline |
+| `the_dream/backtest/shadow_clv.py` | Historical shadow CLV harness |
+| `the_dream/ingest/historical.py` | Offline historical race loader |
+| `clv_oracle.py` | Known-answer CLV regression oracle |
 | `the_dream/tests/test_decide_parity.py` | Parity enforcement |
 
 ## Commission
